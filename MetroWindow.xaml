@@ -5,20 +5,33 @@
                       xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:fluentribbontest="clr-namespace:FluentRibbonTest" 
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                       Title="My first RibbonWindow" 
-                  ShowSystemMenuOnRightClick="False"
-                  Loaded="MetroWindow_Loaded"
+GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
+                   ShowIconOnTitleBar="False"
+                   ShowSystemMenuOnRightClick="False"
+                   ShowTitleBar="True"
+                   TitleCharacterCasing="Normal"
+                   WindowStartupLocation="CenterScreen"
+                   WindowState="Normal"
+                   WindowTransitionsEnabled="False"
                       Width="800" 
                       Height="600">
 
     <mah:MetroWindow.Resources>
-        <Fluent:EqualsToVisibilityConverter x:Key="equalsToVisiblityConverter" />
+        <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
+
+        <Style x:Key="{x:Type Fluent:BackstageTabControl}"
+                   BasedOn="{StaticResource {x:Type Fluent:BackstageTabControl}}"
+                   TargetType="{x:Type Fluent:BackstageTabControl}">
+            <Setter Property="SelectedContentMargin" Value="0" />
+        </Style>
     </mah:MetroWindow.Resources>
 
     <mah:MetroWindow.TitleTemplate>
         <DataTemplate>
-            <Fluent:RibbonTitleBar x:Name="RibbonTitleBar"     
-                                   
+            <Fluent:RibbonTitleBar x:Name="RibbonTitleBar"    
+                                   DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}"
                                    Header="{Binding Path=Title, RelativeSource={RelativeSource AncestorType=Window}}"/>
         </DataTemplate>
     </mah:MetroWindow.TitleTemplate>
@@ -29,28 +42,40 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Fluent:Ribbon Grid.Row="0">
+        <Fluent:Ribbon Grid.Row="0" x:Name="ribbon"
+                       AutomaticStateManagement="True"
+                       IsSimplified="False"
+                       CanUseSimplified="True">
+
             <!--Backstage-->
             <Fluent:Ribbon.Menu>
-                <Fluent:Backstage>
+                <Fluent:Backstage UseHighestAvailableAdornerLayer="False">
+                    <Fluent:BackstageTabControl x:Name="backstageTabControl" SelectedContentMargin="0">
+                        <Fluent:Button Header="Demo" />
+                    </Fluent:BackstageTabControl>
                 </Fluent:Backstage>
             </Fluent:Ribbon.Menu>
 
             <!--Contextual Tab Groups-->
             <Fluent:Ribbon.ContextualGroups>
                 <Fluent:RibbonContextualTabGroup x:Name="toolsGroup"
-                                     Header="Binded" 
-                                     Visibility="{Binding IsTabGroupVisible, Converter={StaticResource boolToVisibilityConverter}}"
-                                     Background="Red" 
-                                     BorderBrush="Red" />
+                                                 Header="Binding" 
+                                                 Background="{DynamicResource Fluent.Ribbon.Brushes.AccentBaseColorBrush}"
+                                                 BorderBrush="{DynamicResource Fluent.Ribbon.Brushes.AccentBaseColorBrush}"
+                                                 Foreground="{DynamicResource BlackBrush}"
+                                                 TabItemMouseOverForeground="Red"
+                                                 TabItemSelectedForeground="{DynamicResource Fluent.Ribbon.Brushes.RibbonTabItem.Foreground}"
+                                                 TabItemSelectedMouseOverForeground="OrangeRed"
+                                                 Visibility="{Binding IsTabGroupVisible, Converter={StaticResource boolToVisibilityConverter}}"/>
 
                 <Fluent:RibbonContextualTabGroup x:Name="visibleGroup"
-                                     Header="Not Binding" 
-                                     Visibility="Visible"
-                                     Background="Green" 
-                                     BorderBrush="Green" />
+                                                 Header="No Binding" 
+                                                 Visibility="Visible"
+                                                 Background="Green" BorderBrush="Green"
+                                                 Foreground="Black"/>
 
             </Fluent:Ribbon.ContextualGroups>
+
 
             <!--Tabs-->
             <Fluent:RibbonTabItem Header="Home">
@@ -63,7 +88,10 @@
 
             <!--Contextual Tabs-->
             <Fluent:RibbonTabItem Header="Contextual Group" 
-                                  Group="{Binding Source={x:Reference toolsGroup}}">
+                                  BorderBrush="{DynamicResource Fluent.Ribbon.Brushes.AccentBaseColorBrush}"
+                                  ActiveTabBackground="Red"
+                                  Group="{Binding ElementName=toolsGroup, Mode=OneWay}"
+                                  Visibility="Visible">
                 <Fluent:RibbonGroupBox Header="Box 1">
                     <Fluent:ComboBox Header="Check Me" />
                 </Fluent:RibbonGroupBox>
@@ -72,8 +100,9 @@
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
 
-            <Fluent:RibbonTabItem Header="Contextual Group" 
-                                  Group="{Binding Source={x:Reference visibleGroup}}">
+            <Fluent:RibbonTabItem Header="Contextual Group"
+                                  Visibility="Visible"
+                                  Group="{Binding ElementName=visibleGroup, Mode=OneWay}">
             </Fluent:RibbonTabItem>
 
 
